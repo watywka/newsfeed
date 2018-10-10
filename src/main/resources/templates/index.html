@@ -60,7 +60,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="modal-title">Добавить новость</h4>
+                        <h4 class="modal-title" id="modalHeader">Добавить новость</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -93,7 +93,7 @@
                                 data-dismiss="modal">
                             Назад
                         </button>
-                        <button type="submit" form="newArticle" class="btn btn-primary">
+                        <button type="submit" form="newArticle" class="btn btn-primary" id="modalButton">
                             Добавить
                         </button>
                     </div>
@@ -113,6 +113,8 @@
             document.getElementById('textField').value = "";
             document.getElementById('categoryField').value = "";
             document.getElementById('idField').value = "";
+            document.getElementById('modalHeader').innerHTML = "Добавить новость";
+            document.getElementById('modalButton').innerHTML = "Добавить";
         }
         function fillModal(id) {
             $.get(
@@ -124,6 +126,8 @@
                     document.getElementById('textField').value = data.content;
                     document.getElementById('categoryField').value = data.category.name;
                     document.getElementById('idField').value = id;
+                    document.getElementById('modalHeader').innerHTML = "Изменить новость";
+                    document.getElementById('modalButton').innerHTML = "Изменить";
             });
             document.getElementById('newArticle').action = '/edit';
         }
