@@ -13,6 +13,6 @@ public interface NewsDao {
     void deleteNews(Long id);
     void updateNews(Long id, String name, String content, String category);
     List<Category> getCategories();
-
+    boolean checkIfNewsExists(String name);
     News getNewsById(long id);
 }

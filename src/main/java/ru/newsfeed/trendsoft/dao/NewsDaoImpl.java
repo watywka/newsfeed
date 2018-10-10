@@ -55,7 +55,14 @@ public class NewsDaoImpl implements NewsDao {
     @Override
     public void deleteNews(Long id) {
         News news = entityManager.find(News.class, id);
+        long oldCategoryId = news.getCategory().getId();
         entityManager.remove(news);
+        List<News> newsList = entityManager.createQuery("From News where category_id = :p1",News.class)
+                .setParameter("p1",oldCategoryId)
+                .getResultList();
+        if (newsList.isEmpty()) {
+            entityManager.remove(entityManager.find(Category.class, oldCategoryId ));
+        }
     }
 
     @Override
@@ -89,6 +96,14 @@ public class NewsDaoImpl implements NewsDao {
     @Override
     public List<Category> getCategories() {
         return entityManager.createQuery("from Category ", Category.class).getResultList();
+    }
+
+    @Override
+    public boolean checkIfNewsExists(String name) {
+        return !entityManager.createQuery("From News where name = :p1",News.class)
+                .setParameter("p1",name)
+                .getResultList().isEmpty();
+
     }
 
     @Override

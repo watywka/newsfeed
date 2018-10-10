@@ -62,9 +62,7 @@ public class FeedController {
     @GetMapping( value ="/get")
     ResponseEntity getById(@RequestParam("id") long id) {
         News news = newsDao.getNewsById(id);
-        return ResponseEntity.ok().header("name",news.getName())
-                .header("news",news.getContent())
-                .header("category",news.getCategory().getName())
+        return ResponseEntity.ok()
                 .body(news);
     }
 
@@ -73,5 +71,11 @@ public class FeedController {
     String edit(@RequestParam("name") String name, @RequestParam("content") String content, @RequestParam("category") String category, @RequestParam("id") long id, Model model) {
         newsDao.updateNews(id, name, content, category);
         return "redirect:/";
+    }
+
+    @PostMapping(value = "/check", params ={"name"})
+    ResponseEntity check(@RequestParam("name") String name) {
+        return ResponseEntity.ok()
+                .body(newsDao.checkIfNewsExists(name));
     }
 }

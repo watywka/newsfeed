@@ -17,10 +17,10 @@
                 </div>
                 <form action="/filter" class="mt-3" method="get">
                     <div class="form-group">
-                        <input type="text" class="form-control search" name="keywords" placeholder="поиск по тексту">
+                        <input id="textFilter" type="text" class="form-control search" name="keywords" placeholder="поиск по тексту">
                     </div>
                     <div class="form-group">
-                        <input class="form-control" type="text" list="categories" name="category" placeholder="поиск по категориям"/>
+                        <input id="categoryFilter" class="form-control" type="text" list="categories" name="category" placeholder="поиск по категориям"/>
                         <datalist id="categories">
                             <option th:each="category : ${categories}" th:text="${category.name}"></option>
                         </datalist>
@@ -71,6 +71,9 @@
                                 <label for="nameField">Заголовок</label>
                                 <input type="text" class="form-control"
                                        id="nameField" placeholder=""  name="name" required/>
+                                <div id="newsExists">
+                                    Новость с таким названием уже существует.
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label for="textField">Текст новости</label>
@@ -107,30 +110,55 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script th:inline="javascript">
+        $(document).ready( function() {
+            var url = new URL(window.location.href);
+            $('#textFilter').val(url.searchParams.get("keywords"));
+            $('#categoryFilter').val(url.searchParams.get("category"));
+        });
+
         function clearModal() {
             document.getElementById('newArticle').action = '/';
-            document.getElementById('nameField').value = "";
-            document.getElementById('textField').value = "";
-            document.getElementById('categoryField').value = "";
-            document.getElementById('idField').value = "";
-            document.getElementById('modalHeader').innerHTML = "Добавить новость";
-            document.getElementById('modalButton').innerHTML = "Добавить";
+            $('#nameField').val("");
+            $('#textField').val("");
+            $('#categoryField').val("");
+            $('#idField').val("");
+            $('#modalHeader').html("Добавить новость");
+            $('#modalButton').html("Добавить");
+            $('#newsExists').hide();
         }
+
         function fillModal(id) {
-            $.get(
-            "/get",
-            {
-                id: id,
-            }, function (data) {
-                    document.getElementById('nameField').value = data.name;
-                    document.getElementById('textField').value = data.content;
-                    document.getElementById('categoryField').value = data.category.name;
-                    document.getElementById('idField').value = id;
-                    document.getElementById('modalHeader').innerHTML = "Изменить новость";
-                    document.getElementById('modalButton').innerHTML = "Изменить";
-            });
             document.getElementById('newArticle').action = '/edit';
+            $.get(
+                "/get",
+                {
+                    id: id,
+                }, function (data) {
+                    $('#nameField').val(data.name);
+                    $('#textField').val(data.content);
+                    $('#categoryField').val(data.category.name);
+                });
+            $('#idField').val(id);
+            $('#modalHeader').html("Изменить новость");
+            $('#modalButton').html("Изменить");
+            $('#newsExists').hide();
         }
+
+        $('#newArticle').submit( function (e) {
+            e.preventDefault();
+            var frm = this;
+            $.post(
+                "/check",
+                {
+                    name: $('#nameField').val().trim(),
+                }, function (data) {
+                    if (data &&  $('#idField').val() === "") {
+                        $('#newsExists').show();
+                    } else {
+                        frm.submit();
+                    }
+                });
+        });
     </script>
 </body>
 </html>
