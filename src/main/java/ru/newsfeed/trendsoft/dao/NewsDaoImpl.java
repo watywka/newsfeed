@@ -40,7 +40,6 @@ public class NewsDaoImpl implements NewsDao {
         if (categoryList.isEmpty()) {
             category1 = new Category();
             category1.setName(category);
-            entityManager.persist(category1);
         } else {
             category1 = categoryList.get(0);
         }
@@ -60,12 +59,42 @@ public class NewsDaoImpl implements NewsDao {
     }
 
     @Override
-    public void updateNews(News news) {
-
+    public void updateNews(Long id, String name, String content, String category) {
+        List<Category> categoryList = entityManager.createQuery("From Category where name = :p1",Category.class)
+                .setParameter("p1",category)
+                .getResultList();
+        Category category1;
+        boolean newCat;
+        if (categoryList.isEmpty()) {
+            category1 = new Category();
+            category1.setName(category);
+        } else {
+            category1 = categoryList.get(0);
+        }
+        News news = entityManager.find(News.class, id);
+        long oldCategoryId = news.getCategory().getId();
+        news.setName(name);
+        news.setContent(content);
+        news.setCategory(category1);
+        entityManager.merge(news);
+        List<News> newsList = entityManager.createQuery("From News where category_id = :p1",News.class)
+                .setParameter("p1",oldCategoryId)
+                .getResultList();
+        if (newsList.isEmpty()) {
+            entityManager.remove(entityManager.find(Category.class, oldCategoryId ));
+        }
     }
+
 
     @Override
     public List<Category> getCategories() {
         return entityManager.createQuery("from Category ", Category.class).getResultList();
+    }
+
+    @Override
+    public News getNewsById(long id) {
+        return entityManager.createQuery("FROM News where id = :p1", News.class)
+                .setParameter("p1",id)
+                .getResultList().get(0);
     }
 }

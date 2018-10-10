@@ -21,6 +21,14 @@ public class News implements Serializable {
 
     }
 
+    public News(long id, String name, String content, Category category) {
+        this.id = id;
+        this.name = name;
+        this.content = content;
+        this.date = date;
+        this.category = category;
+    }
+
     @Id
     @GeneratedValue(generator = "increment")
     @GenericGenerator(name = "increment", strategy = "increment")

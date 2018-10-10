@@ -1,6 +1,7 @@
 package ru.newsfeed.trendsoft.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,5 +57,21 @@ public class FeedController {
         model.addAttribute("news", allNews);
         model.addAttribute("categories", categoryList);
         return "index";
+    }
+
+    @GetMapping( value ="/get")
+    ResponseEntity getById(@RequestParam("id") long id) {
+        News news = newsDao.getNewsById(id);
+        return ResponseEntity.ok().header("name",news.getName())
+                .header("news",news.getContent())
+                .header("category",news.getCategory().getName())
+                .body(news);
+    }
+
+
+    @PostMapping(value = "/edit", params = {"name", "content", "category", "id"})
+    String edit(@RequestParam("name") String name, @RequestParam("content") String content, @RequestParam("category") String category, @RequestParam("id") long id, Model model) {
+        newsDao.updateNews(id, name, content, category);
+        return "redirect:/";
     }
 }

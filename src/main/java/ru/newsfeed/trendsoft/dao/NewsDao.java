@@ -11,7 +11,8 @@ public interface NewsDao {
     List<News> getNewsByCategoryAndKeywords(String keywords, String categories);
     void addNews(String name, String content, String category);
     void deleteNews(Long id);
-    void updateNews(News news);
+    void updateNews(Long id, String name, String content, String category);
     List<Category> getCategories();
 
+    News getNewsById(long id);
 }
