@@ -38,6 +38,9 @@
                         <a class="close" aria-label="Close" th:href="@{'/remove/' + ${article.id}}">
                             <span aria-hidden="true">&times;</span>
                         </a>
+                        <a class="close" aria-label="Close" th:href="@{'/remove/' + ${article.id}}">
+                            <span aria-hidden="true" class="btn-edit">✎</span>
+                        </a>
                         <h1 class="post-title" th:text="${article.name}"></h1>
                         <ul class="post-meta">
                             <li><i class="mdi mdi-calendar"></i> <span th:text="${#dates.format(article.date, 'dd-MMM-yyyy')}"></span></li>
